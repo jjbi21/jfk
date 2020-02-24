@@ -34,7 +34,7 @@ if args.cuda:
 # file, file_len = read_file(args.filename)
 
 import pickle
-pickle_off = open('gaming.pkl', 'rb')
+pickle_off = open(args.filename, 'rb')
 file = pickle.load(pickle_off)
 pickle_off.close()
 file = [(str(ele) + "\v") for ele in file]
@@ -113,4 +113,3 @@ try:
 except KeyboardInterrupt:
     print("Saving before quit...")
     save()
-
