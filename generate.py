@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # https://github.com/spro/char-rnn.pytorch
+<<<<<<< HEAD
 import smart_open
+=======
+
+>>>>>>> 3d5d18ec90eeba3dd123a5988171ceaf04b796ff
 import torch
 import os
 import argparse
@@ -8,6 +12,7 @@ import argparse
 from helpers import *
 from model import *
 
+<<<<<<< HEAD
 def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')):
     """ Filter a distribution of logits using top-k and/or nucleus (top-p) filtering
         Args:
@@ -47,11 +52,23 @@ def generate(decoder, word_model, punc, prime_str='A', predict_len=100, temperat
             hidden = (hidden[0].cuda(), hidden[1].cuda())
         else:
             hidden = hidden.cuda()
+=======
+def generate(decoder, corpus, prime_str='A', predict_len=100, temperature=0.8, cuda=False):
+    hidden = decoder.init_hidden(1)
+    prime_input = Variable(char_tensor(prime_str).unsqueeze(0))
+
+    if cuda:
+        hidden = hidden.cuda()
+>>>>>>> 3d5d18ec90eeba3dd123a5988171ceaf04b796ff
         prime_input = prime_input.cuda()
     predicted = prime_str
 
     # Use priming string to "build up" hidden state
+<<<<<<< HEAD
     for p in range(len(prime_input) ):
+=======
+    for p in range(len(prime_str) - 1):
+>>>>>>> 3d5d18ec90eeba3dd123a5988171ceaf04b796ff
         _, hidden = decoder(prime_input[:,p], hidden)
         
     inp = prime_input[:,-1]
@@ -60,6 +77,7 @@ def generate(decoder, word_model, punc, prime_str='A', predict_len=100, temperat
         output, hidden = decoder(inp, hidden)
         
         # Sample from the network as a multinomial distribution
+<<<<<<< HEAD
         # output_dist = output.data.view(-1).div(temperature).exp()
         # top_i = torch.multinomial(output_dist, 1)[0]
 
@@ -93,10 +111,41 @@ def generate(decoder, word_model, punc, prime_str='A', predict_len=100, temperat
                 break
 
     return predicted
+=======
+        output_dist = output.data.view(-1).div(temperature).exp()
+        top_i = torch.multinomial(output_dist, 1)[0]
+
+        # Add predicted character to string and use as next input
+        predicted_char = all_characters[top_i]
+        predicted += predicted_char
+        inp = Variable(char_tensor(predicted_char).unsqueeze(0))
+        if cuda:
+            inp = inp.cuda()
+
+    endOfComment = predicted.find("\v")
+    endOfComment = endOfComment if endOfComment != -1 else len(predicted)
+    predicted = predicted[0:endOfComment]
+
+    for ele in corpus:
+        if(predicted == ele):
+            print("generated identical")
+            predicted = generate(decoder, corpus, inp, predict_len, temperature, cuda)
+            break
+
+    return predicted
+    
+    #endOfComment = predicted.find("\v")
+    #endOfComment = endOfComment if endOfComment != -1 else len(predicted)
+    #return predicted[0:endOfComment]
+>>>>>>> 3d5d18ec90eeba3dd123a5988171ceaf04b796ff
 
 # Run as standalone script
 if __name__ == '__main__':
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 3d5d18ec90eeba3dd123a5988171ceaf04b796ff
 # Parse command line arguments
     argparser = argparse.ArgumentParser()
     argparser.add_argument('filename', type=str)
@@ -104,6 +153,7 @@ if __name__ == '__main__':
     argparser.add_argument('-l', '--predict_len', type=int, default=100)
     argparser.add_argument('-t', '--temperature', type=float, default=0.8)
     argparser.add_argument('--cuda', action='store_true')
+<<<<<<< HEAD
     argparser.add_argument('--punc', action='store_true')
     args = argparser.parse_args()
 
@@ -142,4 +192,21 @@ if __name__ == '__main__':
         print(predicted)
     #print(generate(decoder, word_model, args.punc, args.prime_str, args.predict_len, args.temperature, args.cuda))
     #print(generate(decoder, word_model, **vars(args)))
+=======
+    args = argparser.parse_args()
+
+    decoder = torch.load(args.filename)
+    
+    #construct corpus
+    import pickle
+    file = open(args.filename[0:len(args.filename)-2] + "pkl", 'rb')
+    corpus = pickle.load(file)
+    file.close()
+    corpus = [(str(ele) + "\v") for ele in corpus]
+    
+    del args.filename
+    #for i in range(500):
+    print(generate(decoder, corpus, **vars(args)))
+        #print("\n")
+>>>>>>> 3d5d18ec90eeba3dd123a5988171ceaf04b796ff
 
