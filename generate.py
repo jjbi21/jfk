@@ -94,11 +94,11 @@ def generate(decoder, corpus, prime_str='A', predict_len=100, temperature=0.8, c
             predicted = generate(decoder, corpus, inp, predict_len, temperature, cuda)
             break
 
-    return predicted
+    #return predicted
     
-    #endOfComment = predicted.find("\v")
-    #endOfComment = endOfComment if endOfComment != -1 else len(predicted)
-    #return predicted[0:endOfComment]
+    endOfComment = predicted.find("\v")
+    endOfComment = endOfComment if endOfComment != -1 else len(predicted)
+    return predicted[0:endOfComment]
 
 # Run as standalone script
 if __name__ == '__main__':
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     argparser = argparse.ArgumentParser()
     argparser.add_argument('filename', type=str)
     argparser.add_argument('-p', '--prime_str', type=str, default='A')
-    argparser.add_argument('-l', '--predict_len', type=int, default=100)
+    argparser.add_argument('-l', '--predict_len', type=int, default=200)
     argparser.add_argument('-t', '--temperature', type=float, default=0.8)
     argparser.add_argument('--cuda', action='store_true')
     args = argparser.parse_args()
