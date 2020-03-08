@@ -5,6 +5,8 @@ import torch
 import os
 import argparse
 
+import random
+
 from helpers import *
 from model import *
 
@@ -122,5 +124,6 @@ if __name__ == '__main__':
     
     del args.filename
     #for i in range(500):
-    print(generate(decoder, corpus, **vars(args)))
+    rand_val = int(random.random() * len(corpus))
+    print(generate(decoder, corpus, corpus[rand_val][0][0], args.predict_len, args.temperature, args.cuda))
         #print("\n")
