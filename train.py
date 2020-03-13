@@ -16,7 +16,7 @@ from generate import *
 # Parse command line arguments
 argparser = argparse.ArgumentParser()
 argparser.add_argument('filename', type=str)
-argparser.add_argument('--model', type=str, default="gru")
+argparser.add_argument('--model', type=str, default="lstm") #changed default to LSTM
 argparser.add_argument('--n_epochs', type=int, default=2000)
 argparser.add_argument('--print_every', type=int, default=100)
 argparser.add_argument('--hidden_size', type=int, default=100)
@@ -34,11 +34,11 @@ if args.cuda:
 # file, file_len = read_file(args.filename)
 
 import pickle
-pickle_off = open('gaming.pkl', 'rb')
+pickle_off = open(args.filename, 'rb')
 file = pickle.load(pickle_off)
 pickle_off.close()
-file = [(str(ele) + "\v") for ele in file]
-file = ''.join([ele for ele in file])
+corpus = [(str(ele) + "\v") for ele in file]
+file = ''.join([ele for ele in corpus])
 file_len = len(file)
 
 def random_training_set(chunk_len, batch_size):
@@ -60,7 +60,7 @@ def random_training_set(chunk_len, batch_size):
 def train(inp, target):
     hidden = decoder.init_hidden(args.batch_size)
     if args.cuda:
-        hidden = hidden.cuda()
+        hidden = (hidden[0].cuda(), hidden[1].cuda()) if decoder.model == "lstm" else hidden.cuda()
     decoder.zero_grad()
     loss = 0
 
@@ -105,7 +105,7 @@ try:
 
         if epoch % args.print_every == 0:
             print('[%s (%d %d%%) %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss))
-            print(generate(decoder, 'Wh', 100, cuda=args.cuda), '\n')
+            print(generate(decoder, corpus, 'Wh', 100, cuda=args.cuda), '\n')
 
     print("Saving...")
     save()
@@ -113,4 +113,3 @@ try:
 except KeyboardInterrupt:
     print("Saving before quit...")
     save()
-
