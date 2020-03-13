@@ -21,17 +21,30 @@ miscellaneous functions: includes tokenization and vector embedding preprocessin
 
 ## char-rnn
 
+CharRNN Implementation
+Files are same as WordRNN, fewer artifacts
+
 
 ## markov chain
+
+Markovify.ipynb
 
 
 ## preprocessing
 
+Mostly .txt and .pkl files with sampled data from the dataset
+
+Preprocessing.ipynb
+preprocessing script
+
 
 ## results
 
+.xlsx files
+raw data results and graphics
+
 survey_results.csv
-raw data results from survey
+csv data results from survey
 
 graph.ipynb
 displays data in charts
